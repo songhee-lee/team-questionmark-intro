@@ -1,0 +1,587 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welcome</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Noto Sans KR', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            overflow-x: hidden;
+            color: #2d3436;
+        }
+
+        /* 비디오 섹션 */
+        .video-section {
+            position: relative;
+            width: 100%;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        #bg-video {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            min-width: 100%;
+            min-height: 100%;
+            width: auto;
+            height: auto;
+            transform: translate(-50%, -50%);
+            object-fit: cover;
+            z-index: -1;
+        }
+
+        .video-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.3);
+            z-index: 1;
+        }
+
+        .video-content {
+            position: relative;
+            z-index: 2;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            justify-content: center;
+            height: 100%;
+            color: white;
+            padding: 20px;
+            padding-left: 80px;
+        }
+
+        .video-content h1 {
+            font-size: 3em;
+            font-weight: 300;
+            margin-bottom: 10px;
+            opacity: 0;
+            animation: fadeInUp 1s ease-out 0.5s forwards;
+        }
+
+        .video-content h2 {
+            font-size: 2.5em;
+            font-weight: 300;
+            font-family: 'Georgia', 'Times New Roman', serif;
+            font-style: italic;
+            opacity: 0;
+            animation: fadeInUp 1s ease-out 0.8s forwards;
+            letter-spacing: 2px;
+        }
+
+        .scroll-indicator {
+            position: absolute;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            animation: bounce 2s infinite;
+            cursor: pointer;
+        }
+
+        .scroll-indicator span {
+            display: block;
+            width: 30px;
+            height: 50px;
+            border: 2px solid white;
+            border-radius: 25px;
+            position: relative;
+        }
+
+        .scroll-indicator span::before {
+            content: '';
+            position: absolute;
+            top: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 6px;
+            height: 6px;
+            background: white;
+            border-radius: 50%;
+            animation: scrollDown 2s infinite;
+        }
+
+        /* 자기소개 섹션 */
+        .intro-section {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 80px 20px;
+            background: linear-gradient(to bottom, #ffffff 0%, #f8faf8 100%);
+        }
+
+        .intro-content {
+            max-width: 800px;
+            text-align: center;
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 1s ease-out;
+        }
+
+        .intro-content.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .intro-content .greeting {
+            font-size: 1.8em;
+            color: #2d5016;
+            margin-bottom: 30px;
+            font-weight: 300;
+        }
+
+        .intro-content .bible-verse {
+            font-size: 1.3em;
+            color: #5a7c45;
+            font-style: italic;
+            margin-bottom: 40px;
+            line-height: 1.8;
+        }
+
+        .intro-content .main-text {
+            font-size: 1.1em;
+            color: #4a6741;
+            line-height: 2;
+            margin-bottom: 30px;
+        }
+
+        .intro-content .hashtags {
+            font-size: 1em;
+            margin-bottom: 40px;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .hashtag {
+            background: #e8f5e1;
+            color: #2d5016;
+            padding: 8px 16px;
+            border-radius: 20px;
+            border: 1px solid #c8e6c1;
+            font-size: 0.95em;
+            transition: all 0.3s ease;
+            opacity: 0;
+            transform: translateY(10px);
+        }
+
+        .hashtag.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .hashtag:hover {
+            background: #d4ecc8;
+            transform: translateY(-2px);
+        }
+
+        /* 타이핑 효과 */
+        .typing-text {
+            display: inline-block;
+            border-right: 2px solid #5a7c45;
+            padding-right: 5px;
+            animation: blink 0.7s step-end infinite;
+        }
+
+        .typing-text.done {
+            border-right: none;
+            animation: none;
+        }
+
+        @keyframes blink {
+            from, to { border-color: transparent; }
+            50% { border-color: #5a7c45; }
+        }
+
+        .intro-content .closing {
+            font-size: 1.1em;
+            color: #2d5016;
+            font-weight: 400;
+            margin-bottom: 50px;
+        }
+
+        /* Gallery 버튼 */
+        .gallery-button {
+            display: inline-block;
+            padding: 15px 50px;
+            background: linear-gradient(135deg, #5a7c45 0%, #2d5016 100%);
+            color: white;
+            text-decoration: none;
+            border-radius: 30px;
+            font-size: 1.1em;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(45, 80, 22, 0.3);
+        }
+
+        .gallery-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(45, 80, 22, 0.4);
+        }
+
+        /* 갤러리 페이지 (숨김 상태) */
+        .gallery-page {
+            display: none;
+            min-height: 100vh;
+            padding: 80px 20px;
+            background: linear-gradient(to bottom, #f8faf8 0%, #ffffff 100%);
+        }
+
+        .gallery-page.active {
+            display: block;
+        }
+
+        .gallery-header {
+            text-align: center;
+            margin-bottom: 60px;
+        }
+
+        .gallery-header h2 {
+            font-size: 2.5em;
+            color: #2d5016;
+            font-weight: 300;
+            margin-bottom: 10px;
+        }
+
+        .back-button {
+            display: inline-block;
+            margin-bottom: 20px;
+            padding: 10px 25px;
+            background: #e8f5e1;
+            color: #2d5016;
+            text-decoration: none;
+            border-radius: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .back-button:hover {
+            background: #d4ecc8;
+        }
+
+        /* 갤러리 그리드 */
+        .gallery-grid {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+            padding: 20px;
+        }
+
+        .gallery-item {
+            position: relative;
+            aspect-ratio: 1;
+            overflow: hidden;
+            border-radius: 15px;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(45, 80, 22, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .gallery-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 20px rgba(45, 80, 22, 0.2);
+        }
+
+        .gallery-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.3s ease;
+        }
+
+        .gallery-item:hover img {
+            transform: scale(1.05);
+        }
+
+        .gallery-item-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(to top, rgba(45, 80, 22, 0.8), transparent);
+            padding: 20px;
+            color: white;
+            transform: translateY(100%);
+            transition: transform 0.3s ease;
+        }
+
+        .gallery-item:hover .gallery-item-overlay {
+            transform: translateY(0);
+        }
+
+        /* 애니메이션 */
+        @keyframes fadeInUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% {
+                transform: translateX(-50%) translateY(0);
+            }
+            40% {
+                transform: translateX(-50%) translateY(-10px);
+            }
+            60% {
+                transform: translateX(-50%) translateY(-5px);
+            }
+        }
+
+        @keyframes scrollDown {
+            0% {
+                opacity: 1;
+                transform: translateX(-50%) translateY(0);
+            }
+            100% {
+                opacity: 0;
+                transform: translateX(-50%) translateY(20px);
+            }
+        }
+
+        /* 반응형 */
+        @media (max-width: 768px) {
+            .video-content {
+                padding-left: 30px;
+            }
+
+            .video-content h1 {
+                font-size: 2.5em;
+            }
+
+            .video-content h2 {
+                font-size: 1.8em;
+            }
+
+            .intro-content .greeting {
+                font-size: 1.4em;
+            }
+
+            .intro-content .bible-verse {
+                font-size: 1.1em;
+            }
+
+            .intro-content .main-text {
+                font-size: 1em;
+            }
+
+            .gallery-grid {
+                grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+                gap: 15px;
+            }
+
+            .gallery-header h2 {
+                font-size: 2em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 메인 페이지 -->
+    <div id="main-page">
+        <!-- 비디오 섹션 -->
+        <section class="video-section">
+            <video id="bg-video" autoplay muted loop playsinline>
+                <source src="./intro.mp4" type="video/mp4">
+            </video>
+            <div class="video-overlay"></div>
+            <div class="video-content">
+                <h2>Songhee Lee</h2>
+            </div>
+            <div class="scroll-indicator" onclick="scrollToIntro()">
+                <span></span>
+            </div>
+        </section>
+
+        <!-- 자기소개 섹션 -->
+        <section class="intro-section" id="intro">
+            <div class="intro-content">
+                <div class="greeting">안녕하세요,</div>
+                
+                <div class="bible-verse">
+                    <span class="typing-text" id="verse-text"></span>
+                </div>
+                
+                <div class="main-text" id="main-text" style="opacity: 0;">
+                    18살, 처음 만났을 때부터 지금까지<br>
+                    변함없는 사랑으로 제 삶을 풍성히 채워주신 하나님 덕분에<br>
+                    좋아하는 것들이 아주 많이 생겼어요.
+                </div>
+                
+                <div class="hashtags" id="hashtags">
+                    <span class="hashtag">#차한잔의여유</span>
+                    <span class="hashtag">#시트러스</span>
+                    <span class="hashtag">#나눔</span>
+                    <span class="hashtag">#신선한음식</span>
+                    <span class="hashtag">#찬양</span>
+                    <span class="hashtag">#산책</span>
+                    <span class="hashtag">#물음표</span>
+                </div>
+                
+                <div class="closing" id="closing" style="opacity: 0;">
+                    선하신 하나님이 우리의 만남을 통해<br>
+                    무엇을 이루실지 기대가 됩니다.
+                </div>
+                
+                <a href="#" class="gallery-button" id="gallery-btn" onclick="showGallery(event)" style="opacity: 0;">Gallery</a>
+            </div>
+        </section>
+    </div>
+
+    <!-- 갤러리 페이지 -->
+    <div id="gallery-page" class="gallery-page">
+        <div class="gallery-header">
+            <a href="#" class="back-button" onclick="showMain(event)">← 돌아가기</a>
+            <h2>Gallery</h2>
+        </div>
+        
+        <div class="gallery-grid">
+            <div class="gallery-item">
+                <img src="./하트.jpeg" alt="하트">
+                <div class="gallery-item-overlay">
+                    <p>하트</p>
+                </div>
+            </div>
+            <div class="gallery-item">
+                <img src="./청계산.jpeg" alt="청계산">
+                <div class="gallery-item-overlay">
+                    <p>청계산 기도</p>
+                </div>
+            </div>
+            <div class="gallery-item">
+                <img src="./야호.jpeg" alt="야호">
+                <div class="gallery-item-overlay">
+                    <p>얏호</p>
+                </div>
+            </div>
+            <div class="gallery-item">
+                <img src="./냠냠.png" alt="냠냠">
+                <div class="gallery-item-overlay">
+                    <p>냠냠</p>
+                </div>
+            </div>
+            <div class="gallery-item">
+                <img src="./광화문준비.jpeg" alt="광화문준비">
+                <div class="gallery-item-overlay">
+                    <p>광화문 준비</p>
+                </div>
+            </div>
+            <div class="gallery-item">
+                <img src="./속초바닷가.jpeg" alt="속초바닷가">
+                <div class="gallery-item-overlay">
+                    <p>누가 오래 버티나 내기</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 타이핑 효과
+        const verseText = '"우리가 사랑함은 그가 먼저 우리를 사랑하셨음이라"';
+        const verseElement = document.getElementById('verse-text');
+        let charIndex = 0;
+        let hasStartedTyping = false;
+
+        function typeText() {
+            if (charIndex < verseText.length) {
+                verseElement.textContent += verseText.charAt(charIndex);
+                charIndex++;
+                setTimeout(typeText, 50); // 타이핑 속도 조절
+            } else {
+                verseElement.classList.add('done');
+                // 타이핑 완료 후 다음 요소들 순차적으로 표시
+                setTimeout(showNextElements, 500);
+            }
+        }
+
+        function showNextElements() {
+            const mainText = document.getElementById('main-text');
+            const hashtags = document.querySelectorAll('.hashtag');
+            const closing = document.getElementById('closing');
+            const galleryBtn = document.getElementById('gallery-btn');
+
+            // 본문 표시
+            mainText.style.transition = 'opacity 1s ease';
+            mainText.style.opacity = '1';
+
+            // 해시태그 순차적으로 표시
+            setTimeout(() => {
+                hashtags.forEach((tag, index) => {
+                    setTimeout(() => {
+                        tag.classList.add('show');
+                    }, index * 100);
+                });
+            }, 800);
+
+            // 마지막 문구 표시
+            setTimeout(() => {
+                closing.style.transition = 'opacity 1s ease';
+                closing.style.opacity = '1';
+            }, 800 + hashtags.length * 100 + 300);
+
+            // 갤러리 버튼 표시
+            setTimeout(() => {
+                galleryBtn.style.transition = 'opacity 1s ease';
+                galleryBtn.style.opacity = '1';
+            }, 800 + hashtags.length * 100 + 800);
+        }
+
+        // 스크롤 인디케이터 클릭 시 자기소개로 부드럽게 이동
+        function scrollToIntro() {
+            document.getElementById('intro').scrollIntoView({ 
+                behavior: 'smooth' 
+            });
+        }
+
+        // 스크롤 시 자기소개 나타나는 효과 + 타이핑 시작
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                    // 타이핑 효과 시작 (한 번만 실행)
+                    if (!hasStartedTyping) {
+                        hasStartedTyping = true;
+                        setTimeout(typeText, 500);
+                    }
+                }
+            });
+        }, {
+            threshold: 0.2
+        });
+
+        const introContent = document.querySelector('.intro-content');
+        if (introContent) {
+            observer.observe(introContent);
+        }
+
+        // 갤러리 페이지로 전환
+        function showGallery(event) {
+            event.preventDefault();
+            document.getElementById('main-page').style.display = 'none';
+            document.getElementById('gallery-page').classList.add('active');
+            window.scrollTo(0, 0);
+        }
+
+        // 메인 페이지로 돌아가기
+        function showMain(event) {
+            event.preventDefault();
+            document.getElementById('main-page').style.display = 'block';
+            document.getElementById('gallery-page').classList.remove('active');
+            window.scrollTo(0, 0);
+        }
+    </script>
+</body>
+</html>
